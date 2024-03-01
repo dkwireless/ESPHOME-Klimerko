@@ -63,7 +63,8 @@ mqtt:
   username: $makerid
   password: "bfnbayv9"
   keepalive: 15s
-  topic_prefix: null# important, indicates not to add home assistant prefix to MQTT messages by default
+  # important, indicates not to add home assistant prefix to MQTT messages by default
+  topic_prefix: null
   discovery: false
 
 # Timer, send new data to cloud each minute
