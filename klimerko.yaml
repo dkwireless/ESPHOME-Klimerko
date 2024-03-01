@@ -1,0 +1,138 @@
+substitutions: # Mandatory setting
+  devicename: klimerko # Put your device name here
+  device_ip: 192.168.x.xxx # Put your device IP address here and device gateway in next line
+  device_gateway: 192.168.x.xxx
+  makerid: maker:xxxxxxxxxxx # Put your Allthingstalk makerid here
+  deviceid: xxxxxxxx # Put your Allthingstalk device id here
+
+esphome:
+  name: $devicename
+  comment: "D1 Mini ESP8266 - Klimerko" # edit comment for your device
+
+esp8266:
+  board: d1_mini_lite #change board type if you have different one or try as is
+
+# Enable Home Assistant API, create new device in ESPHOME and copy and replace xxx with api key and ota password below
+api:
+  encryption:
+    key: "xxxxxxxxxxxxxxxxxxxxxxxxxxx" 
+ota:
+  password: "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+wifi: # add your wifi ssid and password to secrets file or edit them directly here
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  use_address: ${device_ip}
+  manual_ip:  
+    static_ip: ${device_ip}
+    gateway: ${device_gateway}
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+    dns2: 1.1.1.1
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Klimerko"
+    password: "kdckdckdc"
+
+
+# Enable logging
+# Remove comments from four lines after 'logger:' to enable mqtt debug logging - optional
+logger:
+#  level: VERBOSE
+#  logs:
+#    mqtt.component: DEBUG
+#    mqtt.client: DEBUG
+
+# PMS7003 uart port config
+uart:
+  rx_pin: D6
+  tx_pin: D5
+  baud_rate: 9600
+  
+# I2C bus config for BME280
+i2c:
+  sda: D2
+  scl: D1
+
+# MQTT setup for communication with Allthingstalk
+mqtt:
+  id: att
+  broker: "api.allthingstalk.io"
+  client_id: $deviceid
+  username: $makerid
+  password: "bfnbayv9"
+  keepalive: 15s
+  topic_prefix: null# important, indicates not to add home assistant prefix to MQTT messages by default
+  discovery: false
+
+# Timer, send new data to cloud each minute
+interval:
+  - interval: 1min
+    id: update_interval
+    then:
+      - logger.log: "Interval triggered"
+      - mqtt.publish_json:
+          topic: "device/$deviceid/state"
+          payload: |-
+            root["air-quality"]["value"] = "";
+            root["pm1"]["value"] = id(pm_1_0).state;
+            root["pm2-5"]["value"] = id(pm_2_5).state;
+            root["pm10"]["value"] = id(pm_10_0).state;
+            root["temperature"]["value"] = id(temperature).state;
+            root["humidity"]["value"] = id(humidity).state;
+            root["pressure"]["value"] = id(pressure).state;
+            root["firmware"]["value"] = id(firmware).state;
+            root["interval"]["value"] = 120;
+            root["wifi-signal"]["value"] = id(wifi_signal_strenght).state;
+
+sensor:
+# WiFi signal sensor
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+    id: wifi_signal_strenght
+
+# pms7003 sensor config
+  - platform: pmsx003
+    type: PMSX003
+    id: pmsensor
+    pm_1_0:
+      name: "Particulate Matter <1.0µm Concentration"
+      id: "pm_1_0"
+
+    pm_2_5:
+      name: "Particulate Matter <2.5µm Concentration"
+      id: pm_2_5
+
+    pm_10_0:
+      name: "Particulate Matter <10.0µm Concentration"
+      id: pm_10_0
+     update_interval: 120s
+     
+# bme280 sensor config
+  - platform: bme280_i2c
+    temperature:
+      name: "BME280 Temperature"
+      oversampling: 16x
+      id: temperature  
+    pressure:
+      name: "BME280 Pressure"
+      id: pressure  
+    humidity:
+      name: "BME280 Humidity"
+      id: humidity
+    address: 0x77
+    update_interval: 60s
+
+text_sensor:
+# Firmware sensor, uploads ESPHOME firmware virsion to cloud
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+    id: firmware
+
+
+
+
+
