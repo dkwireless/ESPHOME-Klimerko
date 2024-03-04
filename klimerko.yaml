@@ -77,7 +77,7 @@ interval:
       - mqtt.publish_json:
           topic: "device/$deviceid/state"
           payload: |-
-            root["air-quality"]["value"] = "";
+            root["air-quality"]["value"] = id(airQualityText).state;
             root["pm1"]["value"] = id(pm_1_0).state;
             root["pm2-5"]["value"] = id(pm_2_5).state;
             root["pm10"]["value"] = id(pm_10_0).state;
@@ -134,7 +134,23 @@ text_sensor:
     hide_timestamp: true
     id: firmware
 
-
+# Air quality text sensor
+  - platform: template
+    id: airQualityText
+    name: "$devicename Air Quality PM2.5"
+    icon: "mdi:air-filter"
+    lambda: |-
+      if (id(pm_10_0).state <= 20) {
+        return {"Excellent"};
+      } else if (id(pm_10_0).state >= 21 && id(pm_10_0).state <= 40) {
+        return {"Good"};
+      } else if (id(pm_10_0).state >= 41 && id(pm_10_0).state <= 50) {
+        return {"Acceptable"};
+      } else if (id(pm_10_0).state >= 51 && id(pm_10_0).state <= 100) {
+        return {"Polluted"};
+      } else if (id(pm_10_0).state > 100) {
+        return {"Very Polluted"};
+      };
 
 
 
