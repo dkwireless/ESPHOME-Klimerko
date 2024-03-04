@@ -150,7 +150,8 @@ text_sensor:
         return {"Polluted"};
       } else if (id(pm_10_0).state > 100) {
         return {"Very Polluted"};
-      };
+      }
+      return {"Very Polluted"};
 
 
 
