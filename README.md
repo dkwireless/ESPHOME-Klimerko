@@ -1,18 +1,19 @@
 # ESPHOME-Klimerko
 Keep your Klimerko device local first
 
-This project was created to help people create their own ESPHOME firmware for Klimerko devices, keep data local first but publish and share thir data with comunity.
+This project was created to help people create their own ESPHOME firmware for Klimerko devices, keep data local first but publish and share thier data with comunity.
 
 To install this firmware you need to:
-1. Create new ESPHOME device in your config
+1. Create a new device in ESPHOME
 2. Copy OTA and API keys
 3. Paste contents form klimerko.yaml file from this project to your device config
 4. Insert your OTA and API keys
 5. Change settings indicated in file
 6. Compile your firmware and enjoy!
 
-“Klimerko” Air Quality Monitoring Station
+About:
 
+“Klimerko” Air Quality Monitoring Station
 
 "Klimerko" is the continuation of the Winning Project from Descon 4.0 2018.
 
