@@ -86,7 +86,7 @@ interval:
             root["pressure"]["value"] = id(pressure).state;
             root["firmware"]["value"] = id(firmware).state;
             root["interval"]["value"] = 120;
-            root["wifi-signal"]["value"] = id(wifi_signal_strenght).state;
+            root["wifi-signal"]["value"] = id(WifiText).state;
 
 sensor:
 # WiFi signal sensor
@@ -152,6 +152,24 @@ text_sensor:
         return {"Very Polluted"};
       }
       return {"Very Polluted"};
-
+      
+# Wifi text sensor       
+  - platform: template
+    id: WifiText
+    name: "$devicename WiFi Signal"
+    lambda: |-
+      if (id(wifi_signal_strenght).state < -87) {
+        return {"Horrible"};
+      } else if (id(wifi_signal_strenght).state >= -87 && id(wifi_signal_strenght).state <= -80) {
+        return {"Bad"};
+      } else if (id(wifi_signal_strenght).state > -80 && id(wifi_signal_strenght).state <= -70) {
+        return {"Decent"};
+      } else if (id(wifi_signal_strenght).state > -70 && id(wifi_signal_strenght).state <= -55) {
+        return {"Good"};
+      } else if (id(wifi_signal_strenght).state > -55) {
+        return {"Excellent"};
+      }
+      return {"Error"};
+    icon: "mdi:wifi"
 
 
