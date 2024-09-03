@@ -67,7 +67,9 @@ mqtt:
   # important, indicates not to add home assistant prefix to MQTT messages by default
   topic_prefix: null
   discovery: false
-
+  discovery_prefix: null
+  discover_ip: false
+  
 # Timer, send new data to cloud each minute
 interval:
   - interval: 1min
